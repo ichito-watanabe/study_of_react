@@ -1,21 +1,35 @@
 import { useState } from 'react';
-import ItemList from './ItemList';
-import AddItem from './AddItem';
 
 function App() {
-  const [items, setItems] = useState<string[]>([]);
+  const [title, setTitle] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
-  const handleAdd = (newItem: string) => {
-    setItems([...items, newItem]);
+  const handleSave = async () => {
+    if (title === '') return;
+    setSaving(true);
+
+    await fetch('/api/notes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title }),
+    });
+
+    setSaving(false);
+    setSaved(true);
+    setTitle("")
   };
 
-  const handleRemove = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
-  };
   return (
     <div>
-      <AddItem onAdd={handleAdd} />
-      <ItemList items={items} onRemove = {handleRemove}/>
+      <input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <button onClick={handleSave} disabled={saving || saved}>
+        {saving ? '保存中…' : '保存'}
+      </button>
+      {saved && <p>保存しました</p> }
     </div>
   );
 }
