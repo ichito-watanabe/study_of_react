@@ -1,4 +1,6 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
+import NoteList from './NoteList';
+import NoteForm from './NoteForm';
 
 type Note = {
   id: number;
@@ -8,25 +10,32 @@ type Note = {
 function App() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  useEffect(()=> {
+
+  useEffect(() => {
     fetch('/api/notes')
-    .then((res) =>res.json())
-    .then((data) => {
-      setNotes(data);
-      setLoading(false);
-    });
+      .then((res) => res.json())
+      .then((data) => {
+        setNotes(data);
+        setLoading(false);
+      });
   }, []);
 
-  if (loading) return <p> 読み込み中...</p>;
-  if (notes.length ===0) return <p> ノートがありません</p>;
+  const handleAdd = (title: string) => {
+    const newNote: Note = { id: Date.now(), title };
+    setNotes([...notes, newNote]);
+  };
+
+  const handleDelete = (id: number) => {
+    setNotes(notes.filter((note) => note.id !== id));
+  };
+
+  if (loading) return <p>読み込み中…</p>;
 
   return (
-    <ul>
-      {notes.map((note) => (
-        <li key= {note.id}>{note.title}</li>
-      ))}
-    </ul>
+    <div>
+      <NoteForm onAdd={handleAdd} />
+      <NoteList notes={notes} onDelete={handleDelete} />
+    </div>
   );
 }
 
