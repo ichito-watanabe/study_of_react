@@ -1,36 +1,32 @@
-import { useState } from 'react';
+import {useState, useEffect} from 'react';
+
+type Note = {
+  id: number;
+  title: string;
+};
 
 function App() {
-  const [title, setTitle] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-
-  const handleSave = async () => {
-    if (title === '') return;
-    setSaving(true);
-
-    await fetch('/api/notes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title }),
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(()=> {
+    fetch('/api/notes')
+    .then((res) =>res.json())
+    .then((data) => {
+      setNotes(data);
+      setLoading(false);
     });
+  }, []);
 
-    setSaving(false);
-    setSaved(true);
-    setTitle("")
-  };
+  if (loading) return <p> 読み込み中...</p>;
+  if (notes.length ===0) return <p> ノートがありません</p>;
 
   return (
-    <div>
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <button onClick={handleSave} disabled={saving || saved}>
-        {saving ? '保存中…' : '保存'}
-      </button>
-      {saved && <p>保存しました</p> }
-    </div>
+    <ul>
+      {notes.map((note) => (
+        <li key= {note.id}>{note.title}</li>
+      ))}
+    </ul>
   );
 }
 
