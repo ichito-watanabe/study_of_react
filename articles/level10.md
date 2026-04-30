@@ -130,6 +130,12 @@ export default NoteForm;
 
 ## 解答
 
+1. `App.tsx` で管理。`useState` には初期値が必要で、API取得は非同期なので表示時点では空配列を入れておく
+2. `NoteForm` の `handleSubmit` → `onAdd(title)` → `App` の `handleAdd` → `setNotes` でリスト更新 → `setTitle('')` でフォームリセット
+3. ユニークな `id` を生成するため。今の時刻をミリ秒の数値で取得するので毎回異なる値になる
+4. `onDelete(note.id)` が呼ばれ、`App` の `handleDelete` に削除対象の `id` が渡される
+5. ない。表示とコールバックの受け渡しだけを担当しており、データの管理は `App` が行っているから
+
 ---
 
 ## 解説
@@ -137,4 +143,25 @@ export default NoteForm;
 ---
 
 ## 演習
+
+**改造問題（2つ、それぞれ別ファイルの変更）**
+
+1. **`app/src/NoteForm.tsx`** を修正：`title` が空のとき「追加」ボタンを `disabled` にしてください
+2. **`app/src/App.tsx`** を修正：`handleAdd` の中で、同じタイトルのノートがすでにあれば追加しないようにしてください  
+   （ヒント：`notes.some((note) => note.title === title)` で「同じタイトルが存在するか」を判定できます）
+
+**よくある間違い：**
+
+```tsx
+// NG：if の条件を {} で囲んでいる
+if {notes.some((note) => note.title === title) return; }
+
+// NG：== を使っている（TypeScript では === を使う）
+disabled={title == ''}
+
+// OK
+if (notes.some((note) => note.title === title)) return;
+disabled={title === ''}
+```
+
 

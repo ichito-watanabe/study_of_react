@@ -21,6 +21,7 @@ function App() {
   }, []);
 
   const handleAdd = (title: string) => {
+    if (notes.some((note) => note.title === title)) return;
     const newNote: Note = { id: Date.now(), title };
     setNotes([...notes, newNote]);
   };

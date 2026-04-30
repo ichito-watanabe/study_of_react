@@ -19,7 +19,9 @@ return (
         value={title}
         onChange={(e) => setTitle(e.target.value)}
     />
-    <button onClick={handleSubmit}>追加</button>
+    <button onClick={handleSubmit} disabled= {title === ''}>
+        追加
+    </button>
     </div>
 );
 }
